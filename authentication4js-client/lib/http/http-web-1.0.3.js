@@ -1,0 +1,3 @@
+var http=http||{};
+http.Factory=http.Factory||function(){return{create:function(a){var a=a||{},d=a.timeout||6E4,e=a.onload||function(){},f=a.onerror||function(){},g=a.onprogress||function(){},a=a.ontimeout||function(){};if("undefined"!==typeof XDomainRequest){var c=new XDomainRequest;c.timeout=d;c.onload=function(){c.fix=!0;e()};c.onerror=f;c.onprogress=g;c.ontimeout=a;c.setRequestHeader=function(){};c.setUserAgent=function(){};return c}var b=new XMLHttpRequest;b.onload=e;b.onerror=f;b.onprogress=g;b.ontimeout=a;b.setUserAgent=
+function(){};var h=b.open;b.open=function(){var a=h.apply(b,arguments);b.timeout=d;return a};return b}}}();http.create=http.create||http.Factory.create;
