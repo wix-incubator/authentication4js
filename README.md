@@ -1,4 +1,2 @@
-authentication4js
-=================
-
-JavaScript client to the Wix Restaurants Authentication Service.
+# authentication4js
+Wix Restaurants Authentication Javascript Client
