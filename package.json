@@ -37,5 +37,8 @@
   "dependencies": {},
   "directories": {
     "test": "test"
+  },
+  "publishConfig": {
+    "registry": "http://repo.dev.wix/artifactory/api/npm/npm-local/"
   }
 }
