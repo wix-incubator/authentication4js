@@ -13,4 +13,7 @@ export class Authentication {
 	wix({instance, appKey}) {
 		return this.client.doRequest({type:"wix.loginInstance", instance, appKey})
 	}
+	openrest({username, password}) {
+		return this.client.doRequest({type:"openrest.login", username, password})
+	}
 }
