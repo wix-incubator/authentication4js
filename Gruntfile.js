@@ -22,8 +22,8 @@ module.exports = function(grunt) {
                         loaders: ['json-loader']
                     },
                     {
-                        test: /\.js$/, 
-                        loaders: ['babel'],
+                        test: /\.jsx?$/,
+                        loaders: ['babel?optional[]=runtime']
                     },
                     {
                         test: /\.(png|jpg)$/,
