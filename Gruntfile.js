@@ -6,7 +6,10 @@ module.exports = function(grunt) {
         webpack: {
             all:{
                 devtool: 'eval',
-                entry: './index',
+                entry: [
+                    'babel/polyfill',
+                    './index'
+                ],
                 output: {
                     path:"dist/",
                     filename:"index.js",
@@ -23,7 +26,7 @@ module.exports = function(grunt) {
                     },
                     {
                         test: /\.jsx?$/,
-                        loaders: ['babel?optional[]=runtime']
+                        loaders: ['babel']
                     },
                     {
                         test: /\.(png|jpg)$/,
