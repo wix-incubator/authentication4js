@@ -29,7 +29,7 @@ describe("Authentication", function() {
 
     let googleLoginRequest = {
         type: "google.login",
-        tokenId: "tokenId",
+        idToken: "idToken",
         clientId: "clientId"
     }
 
@@ -253,7 +253,7 @@ describe("Authentication", function() {
                 }
             })
 
-            return authentication.google({clientId:"clientId", tokenId:"tokenId"}).then(function(response) {
+            return authentication.google({clientId:"clientId", idToken:"idToken"}).then(function(response) {
                 expect(response).to.deep.equal(googleLoginResponse);
             }, function(error) {
 
@@ -269,7 +269,7 @@ describe("Authentication", function() {
                 }
             })
 
-            return authentication.google({clientId:"clientId", tokenId:"tokenId"}).then(function(response) {
+            return authentication.google({clientId:"clientId", idToken:"idToken"}).then(function(response) {
                 // Unexpected success
                 assert.ok(false, "Tokenizing should have failed " + JSON.stringify(response))
             }, function(error) {
@@ -292,7 +292,7 @@ describe("Authentication", function() {
                 delay: 100
             })
 
-            return authenticationWithTimeout.google({clientId:"clientId", tokenId:"tokenId"}).then(function(response) {
+            return authenticationWithTimeout.google({clientId:"clientId", idToken:"idToken"}).then(function(response) {
                 // Unexpected success
                 assert.ok(false, "Request should have timed out, but returned " + JSON.stringify(response))
             }, function(error) {
@@ -307,7 +307,7 @@ describe("Authentication", function() {
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.google({clientId:"clientId", tokenId:"tokenId"}).then(function(response) {
+            return authenticationWithInvalidEndpointUrl.google({clientId:"clientId", idToken:"idToken"}).then(function(response) {
                 // Unexpected success
                 assert.ok(false, "Network should be down, but request returned " + JSON.stringify(response))
             }, function(error) {
@@ -323,7 +323,7 @@ describe("Authentication", function() {
                 useRawResponse: true
             })
 
-            return authentication.google({clientId:"clientId", tokenId:"tokenId"}).then(function(response) {
+            return authentication.google({clientId:"clientId", idToken:"idToken"}).then(function(response) {
                 // Unexpected success
                 assert.ok(false, "Expected protocol error, but request returned " + JSON.stringify(response))
             }, function(error) {

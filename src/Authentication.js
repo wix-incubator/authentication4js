@@ -16,7 +16,7 @@ export class Authentication {
     openrest({username, password}) {
         return this.client.doRequest({type:"openrest.login", username, password})
     }
-    google({tokenId, clientId}) {
-        return this.client.doRequest({type:"google.login", tokenId, clientId})
+    google({idToken, clientId}) {
+        return this.client.doRequest({type:"google.login", idToken, clientId})
     }
 }
