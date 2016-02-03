@@ -15,7 +15,7 @@
     "authentication"
   ],
   "author": "Wix Restaurants",
-  "license": "Apache",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/wix/authentication4js.git/issues"
   },
