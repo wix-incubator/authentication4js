@@ -1,22 +1,18 @@
 'use strict'
 
-import {CommonProtocolClient} from './CommonProtocolClient.js'
+import {CommonProtocolClient} from './CommonProtocolClient'
 
 export class Authentication {
-    constructor({XMLHttpRequest, endpointUrl, timeout}) {
-        this.client = new CommonProtocolClient({
-            XMLHttpRequest: XMLHttpRequest,
-            endpointUrl: endpointUrl || 'https://auth.openrest.com/v1.0',
-            timeout: timeout || 0
-        })
+    constructor({XMLHttpRequest, endpointUrl = 'https://auth.openrest.com/v1.0', timeout = 0}) {
+        this._client = new CommonProtocolClient({XMLHttpRequest, endpointUrl, timeout})
     }
     wix({instance, appKey}) {
-        return this.client.doRequest({type:'wix.loginInstance', instance, appKey})
+        return this._client.doRequest({type:'wix.loginInstance', instance, appKey})
     }
     openrest({username, password}) {
-        return this.client.doRequest({type:'openrest.login', username, password})
+        return this._client.doRequest({type:'openrest.login', username, password})
     }
     google({idToken, clientId}) {
-        return this.client.doRequest({type:'google.login', idToken, clientId})
+        return this._client.doRequest({type:'google.login', idToken, clientId})
     }
 }

@@ -1,47 +1,50 @@
 'use strict'
 
+import Q from 'q'
+
 export class CommonProtocolClient {
-	constructor({XMLHttpRequest, endpointUrl, timeout}) {
-		this.XMLHttpRequest = XMLHttpRequest
-		this.endpointUrl = endpointUrl
-		this.timeout = timeout || 0
+	constructor({XMLHttpRequest, endpointUrl, timeout = 0}) {
+		this._XMLHttpRequest = XMLHttpRequest
+		this._endpointUrl = endpointUrl
+		this._timeout = timeout
 	}
 	doRequest(request) {
-		let This = this
-		return new Promise(function(resolve, reject) {
-			let xhr = new This.XMLHttpRequest()
-			xhr.ontimeout = function() {
-				reject({
-					code: 'timeout',
-					description: 'request timed out'
-				})
-			}
-			xhr.onerror = function() {
-				reject({
-					code: 'network_down',
-					description: 'network is down'
-				})
-			}
-			xhr.onload = function() {
-				try {
-					let response = JSON.parse(xhr.response)
-					if (response.error) {
-						reject(response.error)
-					} else {
-						resolve(response.value)
-					}
-				} catch (e) {
-					reject({
-						code: 'protocol',
-						description: 'unexpected response format'
-					})
+		const deferred = Q.defer()
+		
+		const xhr = new this._XMLHttpRequest()
+		xhr.ontimeout = () => {
+			deferred.reject({
+				code: 'timeout',
+				description: 'request timed out'
+			})
+		}
+		xhr.onerror = () => {
+			deferred.reject({
+				code: 'network_down',
+				description: 'network is down'
+			})
+		}
+		xhr.onload = () => {
+			try {
+				const response = JSON.parse(xhr.response)
+				if (response.error) {
+					deferred.reject(response.error)
+				} else {
+					deferred.resolve(response.value)
 				}
+			} catch (e) {
+				deferred.reject({
+					code: 'protocol',
+					description: 'unexpected response format'
+				})
 			}
-			
-			xhr.open('POST', This.endpointUrl, true)
-			xhr.timeout = This.timeout
-			xhr.setRequestHeader('Content-Type', 'application/json')
-			xhr.send(JSON.stringify(request))
-		})
+		}
+		
+		xhr.open('POST', this._endpointUrl, true)
+		xhr.timeout = this._timeout
+		xhr.setRequestHeader('Content-Type', 'application/json')
+		xhr.send(JSON.stringify(request))
+		
+		return deferred.promise
 	}
 }
