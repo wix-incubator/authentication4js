@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 export class CommonProtocolClient {
 	constructor({XMLHttpRequest, endpointUrl, timeout}) {
@@ -12,14 +12,14 @@ export class CommonProtocolClient {
 			let xhr = new This.XMLHttpRequest()
 			xhr.ontimeout = function() {
 				reject({
-					code: "timeout",
-					description: "request timed out"
+					code: 'timeout',
+					description: 'request timed out'
 				})
 			}
 			xhr.onerror = function() {
 				reject({
-					code: "network_down",
-					description: "network is down"
+					code: 'network_down',
+					description: 'network is down'
 				})
 			}
 			xhr.onload = function() {
@@ -32,15 +32,15 @@ export class CommonProtocolClient {
 					}
 				} catch (e) {
 					reject({
-						code: "protocol",
-						description: "unexpected response format"
+						code: 'protocol',
+						description: 'unexpected response format'
 					})
 				}
 			}
 			
-			xhr.open("POST", This.endpointUrl, true)
+			xhr.open('POST', This.endpointUrl, true)
 			xhr.timeout = This.timeout
-			xhr.setRequestHeader("Content-Type", "application/json")
+			xhr.setRequestHeader('Content-Type', 'application/json')
 			xhr.send(JSON.stringify(request))
 		})
 	}
