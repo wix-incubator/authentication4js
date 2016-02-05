@@ -1,70 +1,70 @@
 'use strict'
 
-import {Authentication} from '../src/Authentication.js'
-import {AuthenticationDriver} from './AuthenticationDriver.js'
+import {Authentication} from '../src/Authentication'
+import {AuthenticationDriver} from './AuthenticationDriver'
 import {expect, assert} from 'chai'
 import {XMLHttpRequest} from 'xhr2'
 
-describe('Authentication', function() {
-    let tokenizerServicePort = 10000
-    let driver = new AuthenticationDriver({
+describe('Authentication', () => {
+    const tokenizerServicePort = 10000
+    const driver = new AuthenticationDriver({
         port: tokenizerServicePort
     })
-    let endpointUrl = 'http://localhost:' + tokenizerServicePort + '/'
-    let invalidEndpointUrl = 'http://thisisanonexistentdomain.thisdoesntexist/'
+    const endpointUrl = `http://localhost:${tokenizerServicePort}/`
+    const invalidEndpointUrl = 'http://thisisanonexistentdomain.thisdoesntexist/'
 
-    let authentication = new Authentication({XMLHttpRequest, endpointUrl})
+    const authentication = new Authentication({XMLHttpRequest, endpointUrl})
 
-    let wixLoginRequest = {
+    const wixLoginRequest = {
         type: 'wix.loginInstance',
         instance: 'instance',
         appKey: 'appKey'
     }
 
-    let openrestLoginRequest = {
+    const openrestLoginRequest = {
         type: 'openrest.login',
         username: 'username',
         password: 'password'
     }
 
-    let googleLoginRequest = {
+    const googleLoginRequest = {
         type: 'google.login',
         idToken: 'idToken',
         clientId: 'clientId'
     }
 
-    let wixLoginResponse = {
+    const wixLoginResponse = {
         response: 'blahblah' // TODO? Real response?
     }
 
-    let openrestLoginResponse = {
+    const openrestLoginResponse = {
         response: 'openrest response' // TODO? Real response?
     }
 
-    let googleLoginResponse = {
+    const googleLoginResponse = {
         response: 'google response' // TODO? Real response?
     }
 
-    let someError = {
+    const someError = {
         code: 'someCode',
         description: 'someDescription'
     }
 
-    before(function() {
+    before(() => {
         driver.start()
     })
 
-    after(function() {
+    after(() => {
         driver.stop()
     })
 
-    beforeEach(function() {
+    beforeEach(() => {
         driver.reset()
     })
 
-    describe('wix', function() {
+    describe('wix', () => {
 
-        it ('authenticates wix correctly', function() {
+        it ('authenticates wix correctly', () => {
 
             driver.addRule({
                 request: wixLoginRequest,
@@ -73,14 +73,14 @@ describe('Authentication', function() {
                 }
             })
 
-            return authentication.wix({instance:'instance', appKey:'appKey'}).then(function(response) {
+            return authentication.wix({instance:'instance', appKey:'appKey'}).then((response) => {
                 expect(response).to.deep.equal(wixLoginResponse);
-            }, function(error) {
-                assert.ok(false, 'Invalid response ' + JSON.stringify(error))
+            }, (error) => {
+                assert.ok(false, `Invalid response ${JSON.stringify(error)}`)
             })
         })
 
-        it ('gracefully fails on invalid authentication', function() {
+        it ('gracefully fails on invalid authentication', () => {
             driver.addRule({
                 request: wixLoginRequest,
                 response: {
@@ -88,16 +88,16 @@ describe('Authentication', function() {
                 }
             })
 
-            return authentication.wix({instance:'instance', appKey:'appKey'}).then(function(response) {
+            return authentication.wix({instance:'instance', appKey:'appKey'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Tokenizing should have failed ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error).to.deep.equal(someError)
             })
         })
 
-        it ('gracefully fails on timeout', function() {
-            let authenticationWithTimeout = new Authentication({
+        it ('gracefully fails on timeout', () => {
+            const authenticationWithTimeout = new Authentication({
                 XMLHttpRequest: XMLHttpRequest,
                 endpointUrl: endpointUrl,
                 timeout: 10
@@ -111,50 +111,50 @@ describe('Authentication', function() {
                 delay: 100
             })
 
-            return authenticationWithTimeout.wix({instance:'instance', appKey:'appKey'}).then(function(response) {
+            return authenticationWithTimeout.wix({instance:'instance', appKey:'appKey'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Request should have timed out, but returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('timeout')
                 expect(error.description).to.not.be.empty
             })
         })
 
-        it ('gracefully fails when network is down', function() {
-            let authenticationWithInvalidEndpointUrl = new Authentication({
+        it ('gracefully fails when network is down', () => {
+            const authenticationWithInvalidEndpointUrl = new Authentication({
                 XMLHttpRequest: XMLHttpRequest,
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.wix({instance:'instance', appKey:'appKey'}).then(function(response) {
+            return authenticationWithInvalidEndpointUrl.wix({instance:'instance', appKey:'appKey'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Network should be down, but request returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('network_down')
                 expect(error.description).to.not.be.empty
             })
         })
 
-        it ('gracefully fails on protocol error', function() {
+        it ('gracefully fails on protocol error', () => {
             driver.addRule({
                 request: wixLoginRequest,
                 response: '<html><head><title>Error 500</title></head></html>',
                 useRawResponse: true
             })
 
-            return authentication.wix({instance:'instance', appKey:'appKey'}).then(function(response) {
+            return authentication.wix({instance:'instance', appKey:'appKey'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Expected protocol error, but request returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('protocol')
                 expect(error.description).to.not.be.empty
             })
         })
     })
 
-    describe('openrest', function() {
+    describe('openrest', () => {
 
-        it ('authenticates openrest correctly', function() {
+        it ('authenticates openrest correctly', () => {
 
             driver.addRule({
                 request: openrestLoginRequest,
@@ -163,14 +163,14 @@ describe('Authentication', function() {
                 }
             })
 
-            return authentication.openrest({username:'username', password:'password'}).then(function(response) {
+            return authentication.openrest({username:'username', password:'password'}).then((response) => {
                 expect(response).to.deep.equal(openrestLoginResponse);
-            }, function(error) {
-                assert.ok(false, 'Invalid response ' + JSON.stringify(error))
+            }, (error) => {
+                assert.ok(false, `Invalid response ${JSON.stringify(error)}`)
             })
         })
 
-        it ('gracefully fails on invalid authentication', function() {
+        it ('gracefully fails on invalid authentication', () => {
             driver.addRule({
                 request: openrestLoginRequest,
                 response: {
@@ -178,16 +178,16 @@ describe('Authentication', function() {
                 }
             })
 
-            return authentication.openrest({username:'username', password:'password'}).then(function(response) {
+            return authentication.openrest({username:'username', password:'password'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Tokenizing should have failed ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error).to.deep.equal(someError)
             })
         })
 
-        it ('gracefully fails on timeout', function() {
-            let authenticationWithTimeout = new Authentication({
+        it ('gracefully fails on timeout', () => {
+            const authenticationWithTimeout = new Authentication({
                 XMLHttpRequest: XMLHttpRequest,
                 endpointUrl: endpointUrl,
                 timeout: 10
@@ -201,50 +201,50 @@ describe('Authentication', function() {
                 delay: 100
             })
 
-            return authenticationWithTimeout.openrest({username:'username', password:'password'}).then(function(response) {
+            return authenticationWithTimeout.openrest({username:'username', password:'password'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Request should have timed out, but returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('timeout')
                 expect(error.description).to.not.be.empty
             })
         })
 
-        it ('gracefully fails when network is down', function() {
-            let authenticationWithInvalidEndpointUrl = new Authentication({
+        it ('gracefully fails when network is down', () => {
+            const authenticationWithInvalidEndpointUrl = new Authentication({
                 XMLHttpRequest: XMLHttpRequest,
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.openrest({username:'username', password:'password'}).then(function(response) {
+            return authenticationWithInvalidEndpointUrl.openrest({username:'username', password:'password'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Network should be down, but request returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('network_down')
                 expect(error.description).to.not.be.empty
             })
         })
 
-        it ('gracefully fails on protocol error', function() {
+        it ('gracefully fails on protocol error', () => {
             driver.addRule({
                 request: openrestLoginRequest,
                 response: '<html><head><title>Error 500</title></head></html>',
                 useRawResponse: true
             })
 
-            return authentication.openrest({username:'username', password:'password'}).then(function(response) {
+            return authentication.openrest({username:'username', password:'password'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Expected protocol error, but request returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('protocol')
                 expect(error.description).to.not.be.empty
             })
         })
     })
 
-    describe('google', function() {
+    describe('google', () => {
 
-        it ('authenticates google correctly', function() {
+        it ('authenticates google correctly', () => {
 
             driver.addRule({
                 request: googleLoginRequest,
@@ -253,15 +253,15 @@ describe('Authentication', function() {
                 }
             })
 
-            return authentication.google({clientId:'clientId', idToken:'idToken'}).then(function(response) {
+            return authentication.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
                 expect(response).to.deep.equal(googleLoginResponse);
-            }, function(error) {
+            }, (error) => {
 
-                assert.ok(false, 'Invalid response ' + JSON.stringify(error))
+                assert.ok(false, `Invalid response ${JSON.stringify(error)}`)
             })
         })
 
-        it ('gracefully fails on invalid authentication', function() {
+        it ('gracefully fails on invalid authentication', () => {
             driver.addRule({
                 request: googleLoginRequest,
                 response: {
@@ -269,16 +269,16 @@ describe('Authentication', function() {
                 }
             })
 
-            return authentication.google({clientId:'clientId', idToken:'idToken'}).then(function(response) {
+            return authentication.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Tokenizing should have failed ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error).to.deep.equal(someError)
             })
         })
 
-        it ('gracefully fails on timeout', function() {
-            let authenticationWithTimeout = new Authentication({
+        it ('gracefully fails on timeout', () => {
+            const authenticationWithTimeout = new Authentication({
                 XMLHttpRequest: XMLHttpRequest,
                 endpointUrl: endpointUrl,
                 timeout: 10
@@ -292,41 +292,41 @@ describe('Authentication', function() {
                 delay: 100
             })
 
-            return authenticationWithTimeout.google({clientId:'clientId', idToken:'idToken'}).then(function(response) {
+            return authenticationWithTimeout.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Request should have timed out, but returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('timeout')
                 expect(error.description).to.not.be.empty
             })
         })
 
-        it ('gracefully fails when network is down', function() {
-            let authenticationWithInvalidEndpointUrl = new Authentication({
+        it ('gracefully fails when network is down', () => {
+            const authenticationWithInvalidEndpointUrl = new Authentication({
                 XMLHttpRequest: XMLHttpRequest,
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.google({clientId:'clientId', idToken:'idToken'}).then(function(response) {
+            return authenticationWithInvalidEndpointUrl.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Network should be down, but request returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('network_down')
                 expect(error.description).to.not.be.empty
             })
         })
 
-        it ('gracefully fails on protocol error', function() {
+        it ('gracefully fails on protocol error', () => {
             driver.addRule({
                 request: googleLoginRequest,
                 response: '<html><head><title>Error 500</title></head></html>',
                 useRawResponse: true
             })
 
-            return authentication.google({clientId:'clientId', idToken:'idToken'}).then(function(response) {
+            return authentication.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
                 // Unexpected success
-                assert.ok(false, 'Expected protocol error, but request returned ' + JSON.stringify(response))
-            }, function(error) {
+                assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
                 expect(error.code).to.equal('protocol')
                 expect(error.description).to.not.be.empty
             })

@@ -1,6 +1,6 @@
 'use strict'
 
-import {CommonProtocolDriver} from './CommonProtocolDriver.js'
+import {CommonProtocolDriver} from './CommonProtocolDriver'
 
 export class AuthenticationDriver {
 	constructor({port}) {
