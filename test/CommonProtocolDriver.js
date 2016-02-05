@@ -1,7 +1,7 @@
-"use strict"
+'use strict'
 
-import http from "http"
-import _ from "lodash"
+import http from 'http'
+import _ from 'lodash'
 
 export class CommonProtocolDriver {
 	constructor({port}) {
@@ -10,7 +10,7 @@ export class CommonProtocolDriver {
 		this.reset()
 	}
 	start() {
-		this.server.listen(this.port, "127.0.0.1")
+		this.server.listen(this.port, '127.0.0.1')
 	}
 	stop() {
 		this.server.close()
@@ -25,7 +25,7 @@ export class CommonProtocolDriver {
 	}
 	_handler(req, res) {
 		let This = this
-		let body = ""
+		let body = ''
 		req.on('data', function (data) {
             body += data
         })
