@@ -33,6 +33,11 @@ describe('Authentication', () => {
         clientId: 'clientId'
     }
 
+    const facebookLoginRequest = {
+        type: 'facebook.login',
+        accessToken: 'accessToken'
+    }
+
     const wixLoginResponse = {
         response: 'blahblah' // TODO? Real response?
     }
@@ -43,6 +48,10 @@ describe('Authentication', () => {
 
     const googleLoginResponse = {
         response: 'google response' // TODO? Real response?
+    }
+
+    const facebookLoginResponse = {
+        response: 'facebook response' // TODO? Real response?
     }
 
     const someError = {
@@ -324,6 +333,97 @@ describe('Authentication', () => {
             })
 
             return authentication.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('protocol')
+                expect(error.description).to.not.be.empty
+            })
+        })
+    })
+
+    describe('facebook', () => {
+
+        it ('authenticates facebook correctly', () => {
+
+            driver.addRule({
+                request: facebookLoginRequest,
+                response: {
+                    value: facebookLoginResponse
+                }
+            })
+
+            return authentication.facebook({accessToken:'accessToken'}).then((response) => {
+                expect(response).to.deep.equal(facebookLoginResponse);
+            }, (error) => {
+
+                assert.ok(false, `Invalid response ${JSON.stringify(error)}`)
+            })
+        })
+
+        it ('gracefully fails on invalid authentication', () => {
+            driver.addRule({
+                request: facebookLoginRequest,
+                response: {
+                    error: someError
+                }
+            })
+
+            return authentication.facebook({accessToken:'accessToken'}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error).to.deep.equal(someError)
+            })
+        })
+
+        it ('gracefully fails on timeout', () => {
+            const authenticationWithTimeout = new Authentication({
+                XMLHttpRequest: XMLHttpRequest,
+                endpointUrl: endpointUrl,
+                timeout: 10
+            })
+
+            driver.addRule({
+                request: facebookLoginRequest,
+                response: {
+                    value: facebookLoginResponse
+                },
+                delay: 100
+            })
+
+            return authenticationWithTimeout.facebook({accessToken: 'accessToken'}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('timeout')
+                expect(error.description).to.not.be.empty
+            })
+        })
+
+        it ('gracefully fails when network is down', () => {
+            const authenticationWithInvalidEndpointUrl = new Authentication({
+                XMLHttpRequest: XMLHttpRequest,
+                endpointUrl: invalidEndpointUrl
+            })
+
+            return authenticationWithInvalidEndpointUrl.facebook({accessToken: 'accessToken'}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('network_down')
+                expect(error.description).to.not.be.empty
+            })
+        })
+
+        it ('gracefully fails on protocol error', () => {
+            driver.addRule({
+                request: facebookLoginRequest,
+                response: '<html><head><title>Error 500</title></head></html>',
+                useRawResponse: true
+            })
+
+            return authentication.facebook({accessToken: 'accessToken'}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
             }, (error) => {

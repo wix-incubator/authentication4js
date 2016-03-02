@@ -15,4 +15,7 @@ export class Authentication {
     google({idToken, clientId}) {
         return this._client.doRequest({type:'google.login', idToken, clientId})
     }
+    facebook({accessToken}) {
+        return this._client.doRequest({type:'facebook.login', accessToken})
+    }
 }
