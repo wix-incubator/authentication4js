@@ -26,7 +26,7 @@ export class CommonProtocolClient {
 		}
 		xhr.onload = () => {
 			try {
-				const response = JSON.parse(xhr.response)
+				const response = JSON.parse(xhr.responseText)
 				if (response.error) {
 					deferred.reject(response.error)
 				} else {
