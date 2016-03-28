@@ -1,5 +1,3 @@
-'use strict'
-
 import http from 'http'
 import _ from 'lodash'
 
@@ -33,7 +31,7 @@ export class CommonProtocolDriver {
 			const rule = _.find(this._rules, (rule) => {
 				return _.isEqual(rule.request, request)
 			})
-			
+
 			if (rule) {
 				_.delay(() => {
 					res.writeHead(200, {'Content-Type': rule.useRawResponse ? 'text/html' : 'application/json'})
@@ -43,6 +41,6 @@ export class CommonProtocolDriver {
 				res.writeHead(404)
 				res.end()
 			}
-        })	
+        })
 	}
 }

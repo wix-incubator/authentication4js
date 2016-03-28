@@ -1,5 +1,3 @@
-'use strict'
-
 import {Authentication} from '../src/Authentication'
 import {AuthenticationDriver} from './AuthenticationDriver'
 import {expect, assert} from 'chai'

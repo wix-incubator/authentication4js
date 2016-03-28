@@ -1,8 +1,6 @@
-'use strict'
-
 import {CommonProtocolClient} from './CommonProtocolClient'
 
-export class Authentication {
+class Authentication {
     constructor({XMLHttpRequest, endpointUrl = 'https://auth.openrest.com/v1.0', timeout = 0}) {
         this._client = new CommonProtocolClient({XMLHttpRequest, endpointUrl, timeout})
     }
@@ -19,3 +17,5 @@ export class Authentication {
         return this._client.doRequest({type:'facebook.login', accessToken})
     }
 }
+
+export { Authentication }
