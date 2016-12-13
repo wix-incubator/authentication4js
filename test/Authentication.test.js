@@ -31,25 +31,53 @@ describe('Authentication', () => {
         clientId: 'clientId'
     }
 
+	const someFacebookAccessToken = 'some facebook access token'
     const facebookLoginRequest = {
         type: 'facebook.login',
-        accessToken: 'accessToken'
+        accessToken: someFacebookAccessToken
+    }
+	
+	const someAccessToken = 'some access token'
+    const authenticateRequest = {
+        type: 'authenticate',
+        accessToken: someAccessToken
     }
 
     const wixLoginResponse = {
-        response: 'blahblah' // TODO? Real response?
+		user: {
+			ns: 'com.wix',
+			id: 'some wix user ID'
+		},
+		accessToken: someAccessToken
     }
 
     const openrestLoginResponse = {
-        response: 'openrest response' // TODO? Real response?
+		user: {
+			ns: 'com.openrest',
+			id: 'some email'
+		},
+		accessToken: someAccessToken
     }
 
     const googleLoginResponse = {
-        response: 'google response' // TODO? Real response?
+		user: {
+			ns: 'com.google',
+			id: 'some Google user ID'
+		},
+		accessToken: someAccessToken
     }
 
     const facebookLoginResponse = {
-        response: 'facebook response' // TODO? Real response?
+		user: {
+			ns: 'com.facebook',
+			id: 'some Facebook user  ID'
+		},
+		accessToken: someAccessToken
+    }
+	
+    const authenticateResponse = {
+        ns: "some namespace",
+		id: "some user ID"
     }
 
     const someError = {
@@ -69,10 +97,8 @@ describe('Authentication', () => {
         driver.reset()
     })
 
-    describe('wix', () => {
-
+    describe('wix.login', () => {
         it ('authenticates wix correctly', () => {
-
             driver.addRule({
                 request: wixLoginRequest,
                 response: {
@@ -80,7 +106,10 @@ describe('Authentication', () => {
                 }
             })
 
-            return authentication.wix({instance:'instance', appKey:'appKey'}).then((response) => {
+            return authentication.wix({
+				instance: wixLoginRequest.instance,
+				appKey: wixLoginRequest.appKey
+			}).then((response) => {
                 expect(response).to.deep.equal(wixLoginResponse);
             }, (error) => {
                 assert.ok(false, `Invalid response ${JSON.stringify(error)}`)
@@ -95,7 +124,10 @@ describe('Authentication', () => {
                 }
             })
 
-            return authentication.wix({instance:'instance', appKey:'appKey'}).then((response) => {
+            return authentication.wix({
+				instance: wixLoginRequest.instance,
+				appKey: wixLoginRequest.appKey
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
             }, (error) => {
@@ -118,7 +150,10 @@ describe('Authentication', () => {
                 delay: 100
             })
 
-            return authenticationWithTimeout.wix({instance:'instance', appKey:'appKey'}).then((response) => {
+            return authenticationWithTimeout.wix({
+				instance: wixLoginRequest.instance,
+				appKey: wixLoginRequest.appKey
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -133,7 +168,10 @@ describe('Authentication', () => {
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.wix({instance:'instance', appKey:'appKey'}).then((response) => {
+            return authenticationWithInvalidEndpointUrl.wix({
+				instance: wixLoginRequest.instance,
+				appKey: wixLoginRequest.appKey
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -149,7 +187,10 @@ describe('Authentication', () => {
                 useRawResponse: true
             })
 
-            return authentication.wix({instance:'instance', appKey:'appKey'}).then((response) => {
+            return authentication.wix({
+				instance: wixLoginRequest.instance,
+				appKey: wixLoginRequest.appKey
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -159,10 +200,8 @@ describe('Authentication', () => {
         })
     })
 
-    describe('openrest', () => {
-
+    describe('openrest.login', () => {
         it ('authenticates openrest correctly', () => {
-
             driver.addRule({
                 request: openrestLoginRequest,
                 response: {
@@ -185,7 +224,10 @@ describe('Authentication', () => {
                 }
             })
 
-            return authentication.openrest({username:'username', password:'password'}).then((response) => {
+            return authentication.openrest({
+				username: openrestLoginRequest.username,
+				password: openrestLoginRequest.password
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
             }, (error) => {
@@ -208,7 +250,10 @@ describe('Authentication', () => {
                 delay: 100
             })
 
-            return authenticationWithTimeout.openrest({username:'username', password:'password'}).then((response) => {
+            return authenticationWithTimeout.openrest({
+				username: openrestLoginRequest.username,
+				password: openrestLoginRequest.password
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -223,7 +268,10 @@ describe('Authentication', () => {
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.openrest({username:'username', password:'password'}).then((response) => {
+            return authenticationWithInvalidEndpointUrl.openrest({
+				username: openrestLoginRequest.username,
+				password: openrestLoginRequest.password
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -239,7 +287,10 @@ describe('Authentication', () => {
                 useRawResponse: true
             })
 
-            return authentication.openrest({username:'username', password:'password'}).then((response) => {
+            return authentication.openrest({
+				username: openrestLoginRequest.username,
+				password: openrestLoginRequest.password
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -249,10 +300,8 @@ describe('Authentication', () => {
         })
     })
 
-    describe('google', () => {
-
+    describe('google.login', () => {
         it ('authenticates google correctly', () => {
-
             driver.addRule({
                 request: googleLoginRequest,
                 response: {
@@ -260,7 +309,10 @@ describe('Authentication', () => {
                 }
             })
 
-            return authentication.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
+            return authentication.google({
+				clientId: googleLoginRequest.clientId,
+				idToken: googleLoginRequest.idToken
+			}).then((response) => {
                 expect(response).to.deep.equal(googleLoginResponse);
             }, (error) => {
 
@@ -276,7 +328,10 @@ describe('Authentication', () => {
                 }
             })
 
-            return authentication.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
+            return authentication.google({
+				clientId: googleLoginRequest.clientId,
+				idToken: googleLoginRequest.idToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
             }, (error) => {
@@ -299,7 +354,10 @@ describe('Authentication', () => {
                 delay: 100
             })
 
-            return authenticationWithTimeout.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
+            return authenticationWithTimeout.google({
+				clientId: googleLoginRequest.clientId,
+				idToken: googleLoginRequest.idToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -314,7 +372,10 @@ describe('Authentication', () => {
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
+            return authenticationWithInvalidEndpointUrl.google({
+				clientId: googleLoginRequest.clientId,
+				idToken: googleLoginRequest.idToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -330,7 +391,10 @@ describe('Authentication', () => {
                 useRawResponse: true
             })
 
-            return authentication.google({clientId:'clientId', idToken:'idToken'}).then((response) => {
+            return authentication.google({
+				clientId: googleLoginRequest.clientId,
+				idToken: googleLoginRequest.idToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -339,11 +403,9 @@ describe('Authentication', () => {
             })
         })
     })
-
-    describe('facebook', () => {
-
+	
+    describe('facebook.login', () => {
         it ('authenticates facebook correctly', () => {
-
             driver.addRule({
                 request: facebookLoginRequest,
                 response: {
@@ -351,7 +413,9 @@ describe('Authentication', () => {
                 }
             })
 
-            return authentication.facebook({accessToken:'accessToken'}).then((response) => {
+            return authentication.facebook({
+				accessToken: someFacebookAccessToken
+			}).then((response) => {
                 expect(response).to.deep.equal(facebookLoginResponse);
             }, (error) => {
 
@@ -367,7 +431,9 @@ describe('Authentication', () => {
                 }
             })
 
-            return authentication.facebook({accessToken:'accessToken'}).then((response) => {
+            return authentication.facebook({
+				accessToken: someFacebookAccessToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
             }, (error) => {
@@ -390,7 +456,9 @@ describe('Authentication', () => {
                 delay: 100
             })
 
-            return authenticationWithTimeout.facebook({accessToken: 'accessToken'}).then((response) => {
+            return authenticationWithTimeout.facebook({
+				accessToken: someFacebookAccessToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -405,7 +473,9 @@ describe('Authentication', () => {
                 endpointUrl: invalidEndpointUrl
             })
 
-            return authenticationWithInvalidEndpointUrl.facebook({accessToken: 'accessToken'}).then((response) => {
+            return authenticationWithInvalidEndpointUrl.facebook({
+				accessToken: someFacebookAccessToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
             }, (error) => {
@@ -421,7 +491,108 @@ describe('Authentication', () => {
                 useRawResponse: true
             })
 
-            return authentication.facebook({accessToken: 'accessToken'}).then((response) => {
+            return authentication.facebook({
+				accessToken: someFacebookAccessToken
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('protocol')
+                expect(error.description).to.not.be.empty
+            })
+        })
+    })
+	
+    describe('authenticate', () => {
+        it ('authenticates correctly', () => {
+            driver.addRule({
+                request: authenticateRequest,
+                response: {
+                    value: authenticateResponse
+                }
+            })
+
+            return authentication.authenticate({
+				accessToken: someAccessToken
+			}).then((response) => {
+                expect(response).to.deep.equal(authenticateResponse);
+            }, (error) => {
+
+                assert.ok(false, `Invalid response ${JSON.stringify(error)}`)
+            })
+        })
+
+        it ('gracefully fails on invalid authentication', () => {
+            driver.addRule({
+                request: authenticateRequest,
+                response: {
+                    error: someError
+                }
+            })
+
+            return authentication.authenticate({
+				accessToken: someAccessToken
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Request should have failed, but returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error).to.deep.equal(someError)
+            })
+        })
+
+        it ('gracefully fails on timeout', () => {
+            const authenticationWithTimeout = new Authentication({
+                XMLHttpRequest: XMLHttpRequest,
+                endpointUrl: endpointUrl,
+                timeout: 10
+            })
+
+            driver.addRule({
+                request: authenticateRequest,
+                response: {
+                    value: authenticateResponse
+                },
+                delay: 100
+            })
+
+            return authenticationWithTimeout.authenticate({
+				accessToken: someAccessToken
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('timeout')
+                expect(error.description).to.not.be.empty
+            })
+        })
+
+        it ('gracefully fails when network is down', () => {
+            const authenticationWithInvalidEndpointUrl = new Authentication({
+                XMLHttpRequest: XMLHttpRequest,
+                endpointUrl: invalidEndpointUrl
+            })
+
+            return authenticationWithInvalidEndpointUrl.authenticate({
+				accessToken: someAccessToken
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('network_down')
+                expect(error.description).to.not.be.empty
+            })
+        })
+
+        it ('gracefully fails on protocol error', () => {
+            driver.addRule({
+                request: authenticateRequest,
+                response: '<html><head><title>Error 500</title></head></html>',
+                useRawResponse: true
+            })
+
+            return authentication.authenticate({
+				accessToken: someAccessToken
+			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
             }, (error) => {

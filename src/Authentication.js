@@ -16,6 +16,9 @@ class Authentication {
     facebook({accessToken}) {
         return this._client.doRequest({type:'facebook.login', accessToken})
     }
+    authenticate({accessToken}) {
+        return this._client.doRequest({type:'authenticate', accessToken})
+    }
 }
 
 export { Authentication }
