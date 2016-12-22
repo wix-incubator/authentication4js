@@ -1,7 +1,7 @@
 import {CommonProtocolClient} from './CommonProtocolClient'
 
 class Authentication {
-    constructor({XMLHttpRequest, endpointUrl = 'https://auth.openrest.com/v1.0', timeout = 0}) {
+    constructor({XMLHttpRequest, endpointUrl = 'https://auth.wixrestaurants.com/v1.0', timeout = 0}) {
         this._client = new CommonProtocolClient({XMLHttpRequest, endpointUrl, timeout})
     }
     wix({instance, appKey}) {
