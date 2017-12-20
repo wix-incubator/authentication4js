@@ -15,8 +15,7 @@ describe('Authentication', () => {
 
     const wixLoginRequest = {
         type: 'wix.loginInstance',
-        instance: 'instance',
-        appKey: 'appKey'
+        instance: 'instance'
     }
 
     const openrestLoginRequest = {
@@ -107,8 +106,7 @@ describe('Authentication', () => {
             })
 
             return authentication.wix({
-				instance: wixLoginRequest.instance,
-				appKey: wixLoginRequest.appKey
+				instance: wixLoginRequest.instance
 			}).then((response) => {
                 expect(response).to.deep.equal(wixLoginResponse);
             }, (error) => {
@@ -125,8 +123,7 @@ describe('Authentication', () => {
             })
 
             return authentication.wix({
-				instance: wixLoginRequest.instance,
-				appKey: wixLoginRequest.appKey
+				instance: wixLoginRequest.instance
 			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
@@ -151,8 +148,7 @@ describe('Authentication', () => {
             })
 
             return authenticationWithTimeout.wix({
-				instance: wixLoginRequest.instance,
-				appKey: wixLoginRequest.appKey
+				instance: wixLoginRequest.instance
 			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
@@ -169,8 +165,7 @@ describe('Authentication', () => {
             })
 
             return authenticationWithInvalidEndpointUrl.wix({
-				instance: wixLoginRequest.instance,
-				appKey: wixLoginRequest.appKey
+				instance: wixLoginRequest.instance
 			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
@@ -188,8 +183,7 @@ describe('Authentication', () => {
             })
 
             return authentication.wix({
-				instance: wixLoginRequest.instance,
-				appKey: wixLoginRequest.appKey
+				instance: wixLoginRequest.instance
 			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
