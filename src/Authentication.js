@@ -7,6 +7,9 @@ class Authentication {
     wix({instance}) {
         return this._client.doRequest({type:'wix.loginInstance', instance})
     }
+    wixInstance({instance}) {
+        return this._client.doRequest({type:'wix_instance.loginInstance', instance})
+    }
     openrest({username, password}) {
         return this._client.doRequest({type:'openrest.login', username, password})
     }

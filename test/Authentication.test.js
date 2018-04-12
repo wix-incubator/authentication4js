@@ -17,6 +17,11 @@ describe('Authentication', () => {
         type: 'wix.loginInstance',
         instance: 'instance'
     }
+    
+    const wixInstanceLoginRequest = {
+        type: 'wix_instance.loginInstance',
+        instance: 'instance'
+    }
 
     const openrestLoginRequest = {
         type: 'openrest.login',
@@ -46,6 +51,14 @@ describe('Authentication', () => {
 		user: {
 			ns: 'com.wix',
 			id: 'some wix user ID'
+		},
+		accessToken: someAccessToken
+    }
+
+    const wixInstanceLoginResponse = {
+		user: {
+			ns: 'com.wix.instances',
+			id: 'some wix instance ID'
 		},
 		accessToken: someAccessToken
     }
@@ -184,6 +197,104 @@ describe('Authentication', () => {
 
             return authentication.wix({
 				instance: wixLoginRequest.instance
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('protocol')
+                expect(error.description).to.not.be.empty
+            })
+        })
+    })
+
+    describe('wix_instance.login', () => {
+        it ('authenticates wixInstance correctly', () => {
+            driver.addRule({
+                request: wixInstanceLoginRequest,
+                response: {
+                    value: wixInstanceLoginResponse
+                }
+            })
+
+            return authentication.wixInstance({
+				instance: wixInstanceLoginRequest.instance
+			}).then((response) => {
+                expect(response).to.deep.equal(wixInstanceLoginResponse);
+            }, (error) => {
+                assert.ok(false, `Invalid response ${JSON.stringify(error)}`)
+            })
+        })
+
+        it ('gracefully fails on invalid authentication', () => {
+            driver.addRule({
+                request: wixInstanceLoginRequest,
+                response: {
+                    error: someError
+                }
+            })
+
+            return authentication.wixInstance({
+				instance: wixInstanceLoginRequest.instance
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Tokenizing should have failed ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error).to.deep.equal(someError)
+            })
+        })
+
+        it ('gracefully fails on timeout', () => {
+            const authenticationWithTimeout = new Authentication({
+                XMLHttpRequest: XMLHttpRequest,
+                endpointUrl: endpointUrl,
+                timeout: 10
+            })
+
+            driver.addRule({
+                request: wixInstanceLoginRequest,
+                response: {
+                    value: wixInstanceLoginResponse
+                },
+                delay: 100
+            })
+
+            return authenticationWithTimeout.wixInstance({
+				instance: wixInstanceLoginRequest.instance
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Request should have timed out, but returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('timeout')
+                expect(error.description).to.not.be.empty
+            })
+        })
+
+        it ('gracefully fails when network is down', () => {
+            const authenticationWithInvalidEndpointUrl = new Authentication({
+                XMLHttpRequest: XMLHttpRequest,
+                endpointUrl: invalidEndpointUrl
+            })
+
+            return authenticationWithInvalidEndpointUrl.wixInstance({
+				instance: wixInstanceLoginRequest.instance
+			}).then((response) => {
+                // Unexpected success
+                assert.ok(false, `Network should be down, but request returned ${JSON.stringify(response)}`)
+            }, (error) => {
+                expect(error.code).to.equal('network_down')
+                expect(error.description).to.not.be.empty
+            })
+        })
+
+        it ('gracefully fails on protocol error', () => {
+            driver.addRule({
+                request: wixInstanceLoginRequest,
+                response: '<html><head><title>Error 500</title></head></html>',
+                useRawResponse: true
+            })
+
+            return authentication.wixInstance({
+				instance: wixInstanceLoginRequest.instance
 			}).then((response) => {
                 // Unexpected success
                 assert.ok(false, `Expected protocol error, but request returned ${JSON.stringify(response)}`)
